@@ -1,0 +1,95 @@
+extends layout
+block content
+    #map
+    #leg_title
+        span#leg_items Map Legend
+    #leg
+        each layer, i in layers
+            input(type='checkbox' onclick='toggle_layer("#{layer.lname}")' id='#{layer.lname}')
+            span#leg_items #{layer.lname}
+            br
+    script(type='text/javascript').
+        
+        var osm = new ol.layer.Tile({source: new ol.source.OSM()})
+
+        var map = new ol.Map({
+            layers: [osm],
+            target: 'map',
+            controls: ol.control.defaults().extend([
+                new ol.control.ScaleLine({className: 'ol-scale-line', target: document.getElementById('scale-line')})
+            ]),
+            view: new ol.View({
+                center: ol.proj.transform([#{lng}, #{lat}], 'EPSG:4326', 'EPSG:3857'), zoom: 14
+            })
+        });
+
+        function toggle_layer(lname) {
+            var layer = addLayer(lname);
+            layer.setVisible(!layer.getVisible());
+        }
+
+        function addLayer(lname) {
+            var layer = addLayer.cache[lname];
+            if (layer === undefined) {
+                layer = new ol.layer.Vector({
+                    source: new ol.source.GeoJSON({
+                        projection :'EPSG:3857',
+                        url: 'pg/' + lname
+                    }),
+                    style: addStyle(lname),
+                    name: lname,
+                    visible: false
+                });
+                addLayer.cache[lname] = layer;
+                map.addLayer(layer);
+            }
+            return layer;
+        }
+        addLayer.cache = {};
+
+
+        function addStyle(lname) {
+            switch (lname) {
+                case "points":
+                    return new ol.style.Style({
+                        image: new ol.style.Circle({
+                            radius: 10,
+                            fill: new ol.style.Fill({color: 'rgba(254,165,83,1)'}),
+                            stroke: new ol.style.Stroke({color: 'rgba(254,127,14,1)', width: 3})
+                        })
+                    })
+                    break;
+                case "lines":
+                    return new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                        color: 'red',
+                        width: 4
+                    })
+                })
+                break;
+                case "polygons":
+                    return new ol.style.Style({
+                        stroke: new ol.style.Stroke({
+                        color: 'rgba(31,119,180,1)',
+                        width: 3
+                    }),
+                    fill: new ol.style.Fill({
+                        color: 'rgba(57,155,221,0.6)'
+                    })
+                })
+                break;
+            }
+        }
+
+        map.on('click', function(evt) {
+            displayFeatureInfo(evt.pixel);
+        });
+
+        var displayFeatureInfo = function(pixel) {
+            var feature = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+                return feature;
+            });
+            if (feature) {
+                alert(feature.get('lname'));
+            } 
+        };
