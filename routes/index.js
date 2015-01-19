@@ -3,7 +3,7 @@ var router = express.Router();
 var postgeo = require("postgeo");
 var pg = require("pg");
 
-var conString = "postgres://jmccrae:monster3@127.0.0.1/mydb";
+var conString = "postgres://user:password@127.0.0.1/database";
 
 /* GET home page. */
 router.get('/', function(req, res) {
