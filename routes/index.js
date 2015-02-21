@@ -3,7 +3,7 @@ var router = express.Router();
 var postgeo = require("postgeo");
 var pg = require("pg");
 
-var conString = "postgres://user:password@127.0.0.1/database";
+var conString = "postgres://geobox:geobox@localhost/infprevia";
 
 /* GET home page. */
 router.get('/', function(req, res) {
@@ -24,7 +24,7 @@ router.get('/map', function(req, res) {
             layers: (result.rows),
             title: 'denelius.com',
             lat: 40.7795213,
-            lng: -73.9641241 
+            lng: -73.9641241
         });
     });
 });

@@ -8,12 +8,16 @@ a {
   color:#00B7FF;
 }
 
+/*
+ * chrome can not print with this CSS settings
 #map {
   position:absolute;
   top:0;
   bottom:0;
   width:100%;
 }
+*/
+
 #leg, #leg_title {
   position:absolute;
   top:50px;
